@@ -37,7 +37,7 @@ const corsOptions = {
 
 // ✅ Apply CORS middleware
 app.use(cors(corsOptions));
-
+app.options('*', cors(corsOptions));
 
 // api endpoints
 app.use("/api/user", userRouter)
