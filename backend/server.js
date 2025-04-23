@@ -15,7 +15,29 @@ connectCloudinary()
 
 // middlewares
 app.use(express.json())
-app.use(cors())
+// ✅ Allowed Origins
+const allowedOrigins = [
+  'https://care-link-admin.vercel.app',
+  'https://carelink-beta.vercel.app'
+];
+
+// ✅ Proper CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+// ✅ Apply CORS middleware
+app.use(cors(corsOptions));
+
 
 // api endpoints
 app.use("/api/user", userRouter)
