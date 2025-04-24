@@ -15,48 +15,48 @@ const port = process.env.PORT || 4000;
 connectDB();
 connectCloudinary();
 
-// CORS middleware (define explicitly allowed origins)
+// Allowed Origins
 const allowedOrigins = [
   'https://care-link-admin.vercel.app',
   'https://carelink-beta.vercel.app',
-  'http://localhost:5174',
+  'http://localhost:5174'
 ];
 
-app.use(cors({
+// CORS Middleware
+const corsOptions = {
   origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps, curl, etc.)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
     } else {
-      return callback(new Error('Not allowed by CORS'));
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-}));
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
 
-// Explicitly handle preflight requests
-app.options('*', cors({
-  origin: allowedOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-}));
+// Use CORS with the defined options
+app.use(cors(corsOptions));
 
-// Middleware to parse JSON
+// Explicitly handle OPTIONS preflight requests
+app.options('*', cors(corsOptions));
+
+// Middleware
 app.use(express.json());
 
-// Routes
+// API Routes
 app.use("/api/user", userRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/doctor", doctorRouter);
 
-// Default route
+// Test route
 app.get("/", (req, res) => {
   res.send("API Working");
 });
 
-// Start server
+// Start Server
 app.listen(port, () => {
   console.log(`✅ Server started on PORT: ${port}`);
 });
